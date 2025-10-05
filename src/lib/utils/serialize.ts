@@ -1,33 +1,46 @@
 import { Prisma } from "@prisma/client"
 
-export function serializePrisma<T>(data: T): T {
-  if (data === null || data === undefined) return data
+export type Serialized<T> =
+  T extends Prisma.Decimal ? number :
+  T extends Date ? string :
+  T extends (infer U)[] ? Serialized<U>[] :
+  T extends object ? { [K in keyof T]: Serialized<T[K]> } :
+  T
 
-  // ✅ Handle Prisma.Decimal
+export function serializePrisma<T>(data: T, seen = new WeakSet()): Serialized<T> {
+  if (data === null || data === undefined) return data as Serialized<T>
+
+  // Prevent infinite recursion on circular references
+  if (typeof data === "object") {
+    if (seen.has(data as object)) return data as Serialized<T>
+    seen.add(data as object)
+  }
+
+  // ✅ Prisma.Decimal
   if (data instanceof Prisma.Decimal) {
     const num = data.toNumber()
-    return (isNaN(num) ? 0 : num) as T
+    return (isNaN(num) ? 0 : num) as Serialized<T>
   }
 
-  // ✅ Handle Date
+  // ✅ Date
   if (data instanceof Date) {
-    return data.toISOString() as T
+    return data.toISOString() as Serialized<T>
   }
 
-  // ✅ Handle Array
+  // ✅ Array
   if (Array.isArray(data)) {
-    return data.map((item) => serializePrisma(item)) as T
+    return data.map((item) => serializePrisma(item, seen)) as Serialized<T>
   }
 
-  // ✅ Handle Object (recursively)
+  // ✅ Object
   if (typeof data === "object") {
-    const obj: any = {}
+    const obj = {} as { [K in keyof T]: Serialized<T[K]> }
     for (const [key, value] of Object.entries(data)) {
-      obj[key] = serializePrisma(value)
+      obj[key as keyof T] = serializePrisma(value, seen) as Serialized<T[keyof T]>
     }
-    return obj
+    return obj as Serialized<T> // ✅ fixed type error here
   }
 
-  // ✅ Return primitive (string, number, boolean, etc.)
-  return data
+  // ✅ Primitive
+  return data as Serialized<T>
 }

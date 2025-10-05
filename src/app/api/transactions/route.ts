@@ -6,9 +6,9 @@ export async function GET() {
   try {
     const transactions = await getTransactions(20)
     return NextResponse.json(transactions)
-  } catch (error: any) {
+  } catch (error) {
     console.error("❌ [GET /api/transactions] Error:", error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error }, { status: 500 })
   }
 }
 
@@ -18,8 +18,8 @@ export async function POST(req: Request) {
     const body = await req.json()
     const tx = await createTransaction(body)
     return NextResponse.json(tx)
-  } catch (error: any) {
+  } catch (error) {
     console.error("❌ [POST /api/transactions] Error:", error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error}, { status: 500 })
   }
 }

@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select"
 import { PlusCircle } from "lucide-react"
 import AddAccountModal from "./AddAccountModal"
+import { Account } from "@prisma/client"
 
 export default function QuickAddTransaction() {
   const [open, setOpen] = useState(false)
@@ -104,7 +105,7 @@ export default function QuickAddTransaction() {
                 <SelectValue placeholder="Select account" />
               </SelectTrigger>
               <SelectContent>
-                {accounts.map((acc: any) => (
+                {accounts?.map((acc:Account) => (
                   <SelectItem key={acc.id} value={acc.id}>
                     {acc.name} ({acc.currency})
                   </SelectItem>

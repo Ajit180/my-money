@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { TransactionClient } from "@/types/transaction"
 
 export default function RecentTransactions() {
   const { data: transactions, isLoading, error } = useTransactions()
@@ -50,7 +51,7 @@ export default function RecentTransactions() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {transactions.map((tx: any) => {
+            {transactions.map((tx: TransactionClient) => {
               // ✅ Ensure date is a string before split
               const formattedDate =
                 typeof tx.date === "string"

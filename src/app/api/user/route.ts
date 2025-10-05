@@ -5,8 +5,8 @@ export async function GET() {
   try {
     const user = await getOrCreateUser()
     return NextResponse.json(user)
-  } catch (error: any) {
+  } catch (error) {
     console.error("❌ [GET /api/user] Error:", error)
-    return NextResponse.json({ error: error.message }, { status: 401 })
+    return NextResponse.json({ error: error }, { status: 401 })
   }
 }

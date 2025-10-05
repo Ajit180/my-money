@@ -6,9 +6,9 @@ export async function GET() {
   try {
     const accounts = await getAccounts()
     return NextResponse.json(accounts)
-  } catch (error: any) {
+  } catch (error) {
     console.error("❌ [GET /api/accounts] Error:", error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: error }, { status: 500 })
   }
 }
 
@@ -18,8 +18,8 @@ export async function POST(req: Request) {
     const body = await req.json()
     const account = await createAccount(body)
     return NextResponse.json(account)
-  } catch (error: any) {
+  } catch (error) {
     console.error("❌ [POST /api/accounts] Error:", error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error }, { status: 500 })
   }
 }
